@@ -7,12 +7,14 @@
 </template>
 
 <script>
+import db from '@/firebase/init'
 
 export default {
   name: 'home',
   data(){
     return{
-      test2: 0
+      test2: 0,
+      users: []
     }
   },
   methods: {
