@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items>
-        <v-btn text>Rejestracja</v-btn>
+        <v-btn text :to="{name: 'rejestracja'}">Rejestracja</v-btn>
         <v-btn text>Zaloguj się</v-btn>
       </v-toolbar-items>
     </v-toolbar>
