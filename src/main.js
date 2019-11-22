@@ -4,13 +4,14 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import firebase from 'firebase'
 
-Vue.config.productionTip = false
+
 
 //init Vue instance only once
 let app = null
 // wait for firebae auth
-firebase.auth().onAuthStateChanged(() => {
+firebase.auth().onAuthStateChanged(user => {
 // reinitialize Vue instance only at the beggining or on refresh the app
+
   if(!app){
     app = new Vue({
       router,
@@ -19,3 +20,5 @@ firebase.auth().onAuthStateChanged(() => {
     }).$mount('#app')
   }
 })
+
+

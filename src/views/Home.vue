@@ -1,30 +1,35 @@
 <template>
-  <div class="home">
+  <v-container class="grey lighten-5">
     <h2>Home</h2>
-    <v-btn @click="test">test</v-btn>
-    {{test2}}
-  </div>
+  </v-container>
 </template>
 
 <script>
 import db from '@/firebase/init'
+import firebase from 'firebase'
+import axios from 'axios'
 
 export default {
-  name: 'home',
+  components: {
+    
+  },
   data(){
-    return{
-      test2: 0,
-      users: []
+    return {
+      conferences: [],
+      items: [],
+      loading: true,
+      selected: null
     }
   },
-  methods: {
-    test(){
-      this.test2++
-    }
+  
   }
-}
+
+
 </script>
 
 <style>
-
+  .category_box {
+    width: 376px;
+  }
 </style>
+

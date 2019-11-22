@@ -39,7 +39,7 @@
         <!-- PRACODAWCA -->
         <v-tab-item>
           <v-card class="ma-4 mt-12" flat>
-            <v-form @submit.prevent="signUpEmployee">
+            <v-form @submit.prevent="signUpEmployer">
               <v-text-field v-model="employerName" label="Nazwa firmy" outlined color="teal"></v-text-field>
               <v-text-field
                 type="email"
@@ -67,8 +67,9 @@
 </template>
 
 <script>
-// import db from '@/firebase/init'
-import firebase from 'firebase/app'
+import db from '@/firebase/init'
+import firebase from 'firebase'
+import functions from 'firebase/functions'
 
 export default {
   data() {
@@ -90,10 +91,34 @@ export default {
       this.$router.go(-1);
     },
     signUpEmployee() {
+      const addEmployee = firebase.functions().httpsCallable("addEmployee")
+
       if(this.email && this.password){
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         .then(response => {
-          console.log(response)
+          addEmployee({ email: response.user.email }).then((msg) => {
+            console.log(msg)
+            db.collection('users').doc(response.user.uid).set({user_id: response.user.uid}).then(() => {
+              console.log('zarejestrowano pracownika')
+            })
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      }
+    },
+    signUpEmployer() {
+      const addEmployer = firebase.functions().httpsCallable("addEmployer")
+
+      if(this.employerName && this.employerEmail && this.employerPassword){
+        firebase.auth().createUserWithEmailAndPassword(this.employerEmail, this.employerPassword)
+        .then(response => {
+          addEmployer({ email: response.user.email }).then(() => {
+            db.collection('employers').doc(response.user.uid).set({employer_id: response.user.uid, company_name: this.employerName}).then(() => {
+              console.log('zarejestrowano pracodawce')
+            })
+          })
         })
         .catch(err => {
           console.log(err)
