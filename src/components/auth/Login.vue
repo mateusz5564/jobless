@@ -2,7 +2,7 @@
   <div class="login d-flex align-center justify-center flex-column">
     <v-card class="mx-auto" min-width="460px">
       <v-tabs v-model="tab" background-color="transparent" height="60px" grow color="teal">
-        <v-tab>Zaloguj się</v-tab>
+        <v-tab>Logowanie</v-tab>
       </v-tabs>
 
       <v-tabs-items v-model="tab">

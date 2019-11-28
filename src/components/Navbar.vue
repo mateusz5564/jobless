@@ -10,9 +10,9 @@
       <v-spacer></v-spacer>
       <p v-if="employee">jako pracownik</p>
       <p v-if="employer">jako pracodawca</p>
+        <v-btn v-if="!user" class="mr-4" large text :to="{name: 'rejestracja'}">Rejestracja</v-btn>
+        <v-btn v-if="!user" large outlined rounded :to="{name: 'logowanie'}">Zaloguj się</v-btn>
       <v-toolbar-items>
-        <v-btn v-if="!user" text :to="{name: 'rejestracja'}">Rejestracja</v-btn>
-        <v-btn v-if="!user" text :to="{name: 'logowanie'}">Zaloguj się</v-btn>
          <!-- current user's menu -->
       <v-menu v-if="user" offset-y min-width="300px">
         <template v-slot:activator="{ on }">
@@ -101,3 +101,4 @@ export default {
   },
 };
 </script>
+
