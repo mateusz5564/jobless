@@ -67,9 +67,9 @@
 </template>
 
 <script>
-import db from '@/firebase/init'
-import firebase from 'firebase'
-import functions from 'firebase/functions'
+import db from "@/firebase/init";
+import firebase from "firebase";
+import functions from "firebase/functions";
 
 export default {
   data() {
@@ -91,38 +91,54 @@ export default {
       this.$router.go(-1);
     },
     signUpEmployee() {
-      const addEmployee = firebase.functions().httpsCallable("addEmployee")
+      const addEmployee = firebase.functions().httpsCallable("addEmployee");
 
-      if(this.email && this.password){
-        firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-        .then(response => {
-          addEmployee({ email: response.user.email }).then((msg) => {
-            console.log(msg)
-            db.collection('users').doc(response.user.uid).set({user_id: response.user.uid}).then(() => {
-              console.log('zarejestrowano pracownika')
-            })
+      if (this.email && this.password) {
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(this.email, this.password)
+          .then(response => {
+            addEmployee({ email: response.user.email }).then(msg => {
+              console.log(msg);
+              db.collection("users")
+                .doc(response.user.uid)
+                .set({ user_id: response.user.uid })
+                .then(() => {
+                  console.log("zarejestrowano pracownika");
+                });
+            });
           })
-        })
-        .catch(err => {
-          console.log(err)
-        })
+          .catch(err => {
+            console.log(err);
+          });
       }
     },
     signUpEmployer() {
-      const addEmployer = firebase.functions().httpsCallable("addEmployer")
+      const addEmployer = firebase.functions().httpsCallable("addEmployer");
 
-      if(this.employerName && this.employerEmail && this.employerPassword){
-        firebase.auth().createUserWithEmailAndPassword(this.employerEmail, this.employerPassword)
-        .then(response => {
-          addEmployer({ email: response.user.email }).then(() => {
-            db.collection('employers').doc(response.user.uid).set({employer_id: response.user.uid, company_name: this.employerName}).then(() => {
-              console.log('zarejestrowano pracodawce')
-            })
+      if (this.employerName && this.employerEmail && this.employerPassword) {
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(
+            this.employerEmail,
+            this.employerPassword
+          )
+          .then(response => {
+            addEmployer({ email: response.user.email }).then(() => {
+              db.collection("employers")
+                .doc(response.user.uid)
+                .set({
+                  employer_id: response.user.uid,
+                  company_name: this.employerName
+                })
+                .then(() => {
+                  console.log("zarejestrowano pracodawce");
+                });
+            });
           })
-        })
-        .catch(err => {
-          console.log(err)
-        })
+          .catch(err => {
+            console.log(err);
+          });
       }
     }
   }
@@ -135,3 +151,5 @@ export default {
   height: calc(100vh - 80px);
 }
 </style>
+
+
