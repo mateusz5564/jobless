@@ -2,8 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import firebase from 'firebase'
 import Home from '@/views/Home'
+import Profile from '@/views/Profile'
 import Register from '@/components/auth/Register'
 import Login from '@/components/auth/Login'
+import CV from '@/components/profile/CV'
 
 Vue.use(Router)
 
@@ -30,6 +32,34 @@ const router = new Router({
       meta: {
         lockIfUserLogedIn: true
       }
+    },
+    {
+      path: '/profil',
+      component: Profile,
+      name: 'profil',
+      meta: {
+        lockIfUserLogedIn: false
+      },
+      children: [
+        {
+          path: 'cv',
+          component: CV,
+          name: 'cv',
+          props: true,
+          meta: {
+            lockIfUserLogedIn: false
+          }
+        },
+        {
+          path: 'applications',
+          component: null,
+          name: 'applications',
+          props: true,
+          meta: {
+            lockIfUserLogedIn: false
+          }
+        }
+      ]
     }
   ]
 })
