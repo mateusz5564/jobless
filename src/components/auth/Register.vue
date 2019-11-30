@@ -102,7 +102,11 @@ export default {
               console.log(msg);
               db.collection("users")
                 .doc(response.user.uid)
-                .set({ user_id: response.user.uid })
+                .set({ user_id: response.user.uid,  
+                       cv: {
+                          experiences: [],
+                          skills: []
+                       }})
                 .then(() => {
                   console.log("zarejestrowano pracownika");
                 });

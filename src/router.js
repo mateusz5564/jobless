@@ -2,8 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import firebase from 'firebase'
 import Home from '@/views/Home'
+import Profile from '@/views/Profile'
 import Register from '@/components/auth/Register'
 import Login from '@/components/auth/Login'
+import CV from '@/components/profile/CV'
+import CVCreator from '@/components/profile/CVCreator'
 
 Vue.use(Router)
 
@@ -30,6 +33,44 @@ const router = new Router({
       meta: {
         lockIfUserLogedIn: true
       }
+    },
+    {
+      path: '/profil',
+      component: Profile,
+      name: 'profil',
+      meta: {
+        lockIfUserLogedIn: false,
+        lockIfUserNotLogedIn: true
+      },
+      children: [
+        {
+          path: 'cv',
+          component: CV,
+          name: 'cv',
+          props: true,
+          meta: {
+            lockIfUserLogedIn: false
+          }
+        },
+        {
+          path: 'cv-kreator',
+          component: CVCreator,
+          name: 'cv-kreator',
+          props: true,
+          meta: {
+            lockIfUserLogedIn: false
+          }
+        },
+        {
+          path: 'applications',
+          component: null,
+          name: 'applications',
+          props: true,
+          meta: {
+            lockIfUserLogedIn: false
+          }
+        }
+      ]
     }
   ]
 })
@@ -39,6 +80,20 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(rec => rec.meta.lockIfUserLogedIn)){
     let user = firebase.auth().currentUser
     if(user){
+      next(false)
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
+//lock is user IS NOT logged in
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(rec => rec.meta.lockIfUserNotLogedIn)){
+    let user = firebase.auth().currentUser
+    if(!user){
       next(false)
     } else {
       next()
