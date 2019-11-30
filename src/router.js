@@ -39,7 +39,8 @@ const router = new Router({
       component: Profile,
       name: 'profil',
       meta: {
-        lockIfUserLogedIn: false
+        lockIfUserLogedIn: false,
+        lockIfUserNotLogedIn: true
       },
       children: [
         {
@@ -79,6 +80,20 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(rec => rec.meta.lockIfUserLogedIn)){
     let user = firebase.auth().currentUser
     if(user){
+      next(false)
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
+//lock is user IS NOT logged in
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(rec => rec.meta.lockIfUserNotLogedIn)){
+    let user = firebase.auth().currentUser
+    if(!user){
       next(false)
     } else {
       next()
