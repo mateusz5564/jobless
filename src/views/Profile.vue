@@ -16,7 +16,7 @@
             <v-divider></v-divider>
 
             <v-list nav>
-              <v-list-item link :to="{name: 'cv'}">
+              <v-list-item link :to="{name: 'cv', params: {cv: this.cv}}">
                 <v-list-item-icon>
                   <v-icon color="green">mdi-account-badge-horizontal</v-icon>
                 </v-list-item-icon>
