@@ -6,6 +6,7 @@ import Profile from '@/views/Profile'
 import Register from '@/components/auth/Register'
 import Login from '@/components/auth/Login'
 import CV from '@/components/profile/CV'
+import CVCreator from '@/components/profile/CVCreator'
 
 Vue.use(Router)
 
@@ -45,6 +46,15 @@ const router = new Router({
           path: 'cv',
           component: CV,
           name: 'cv',
+          props: true,
+          meta: {
+            lockIfUserLogedIn: false
+          }
+        },
+        {
+          path: 'cv-kreator',
+          component: CVCreator,
+          name: 'cv-kreator',
           props: true,
           meta: {
             lockIfUserLogedIn: false
