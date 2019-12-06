@@ -4,6 +4,8 @@ import firebase from 'firebase'
 import Home from '@/views/Home'
 import Register from '@/components/auth/Register'
 import Login from '@/components/auth/Login'
+import NewOffer from '@/views/NewOffer'
+import { networkInterfaces } from 'os';
 
 Vue.use(Router)
 
@@ -29,6 +31,27 @@ const router = new Router({
       name: 'logowanie',
       meta: {
         lockIfUserLogedIn: true
+      }
+    },
+    {
+      path: '/dodaj_oferte',
+      component: NewOffer,
+      name: 'dodaj_oferte',
+      beforeEnter: (to, from, next) => {
+        let user = firebase.auth().currentUser
+        if(user){
+          user.getIdTokenResult().then((token) => {
+            if(token.claims.employer){
+              next()
+            } else {
+              console.log("You are not an employer")
+              next(false)
+            }
+          })
+        } else {
+          console.log("You are not logged in")
+          next(false)
+        }
       }
     }
   ]
