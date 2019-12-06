@@ -35,7 +35,7 @@
 
             <v-divider></v-divider>
 
-          <v-list-item link :to="{name: 'profil'}">
+          <v-list-item v-if="employee" link :to="{name: 'profil'}">
             <v-list-item-icon>
               <v-icon>mdi-account</v-icon>
             </v-list-item-icon>

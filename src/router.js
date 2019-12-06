@@ -5,7 +5,7 @@ import Home from '@/views/Home'
 import Profile from '@/views/Profile'
 import Register from '@/components/auth/Register'
 import Login from '@/components/auth/Login'
-import NewOffer from '@/views/NewOffer'
+import NewOffer from '@/views/employer/NewOffer'
 import CV from '@/components/profile/CV'
 import CVCreator from '@/components/profile/CVCreator'
 
