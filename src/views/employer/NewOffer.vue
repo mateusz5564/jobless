@@ -95,7 +95,6 @@ export default {
       this.requirements = [...this.requirements];
     },
     addOffer() {
-      console.log("dodawanie");
       db.collection("job_offers")
         .add({
           category_id: this.selectedCategory,
@@ -109,13 +108,13 @@ export default {
         })
         .then(response => {
           console.log(response);
+          console.log("poprawnie dodano oferte")
         })
         .catch(err => {
           console.log(err);
         });
     },
     getCategories() {
-      console.log("pobieram kategorie");
       db.collection("categories")
         .get()
         .then(querySnapshot => {
