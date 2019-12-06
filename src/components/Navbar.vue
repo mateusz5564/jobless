@@ -35,10 +35,10 @@
 
             <v-divider></v-divider>
 
-            <v-list-item link>
-              <v-list-item-icon>
-                <v-icon>mdi-account</v-icon>
-              </v-list-item-icon>
+          <v-list-item link :to="{name: 'profil'}">
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
 
               <v-list-item-content>
                 <v-list-item-title>Profil</v-list-item-title>
