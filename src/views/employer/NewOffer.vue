@@ -13,9 +13,19 @@
           label="Tytuł oferty"
           outlined
         ></v-text-field>
+
+        <v-autocomplete color="teal" outlined label="Kategoria" v-model="selectedCategory" :items="categories" item-text="name" item-value="id"></v-autocomplete>
         <p class="text-center subtitle-1">Wynagrodzenie</p>
         <div class="salary mx-auto d-flex align-center">
-          <v-text-field class="mr-5" filled rounded color="teal" v-model="salary_min" label="od"></v-text-field>
+          <v-text-field
+            height="2"
+            class="mr-5"
+            filled
+            rounded
+            color="teal"
+            v-model="salary_min"
+            label="od"
+          ></v-text-field>
           <v-text-field filled rounded color="teal" v-model="salary_max" label="do"></v-text-field>
         </div>
         <v-textarea
@@ -58,6 +68,9 @@
 </template>
 
 <script>
+import firebase from "firebase";
+import db from "@/firebase/init";
+
 export default {
   data() {
     return {
@@ -66,10 +79,15 @@ export default {
       salary_max: null,
       description: null,
       requirements: ["Język angielski", "Prawo jazdy kat. B."],
+      selectedCategory: null,
+      categories: [],
       rules: {
         required: value => !!value || "pole wymagane"
       }
     };
+  },
+  created() {
+    this.getCategories();
   },
   methods: {
     remove(item) {
@@ -78,6 +96,38 @@ export default {
     },
     addOffer() {
       console.log("dodawanie");
+      db.collection("job_offers")
+        .add({
+          category_id: this.selectedCategory,
+          employer_id: firebase.auth().currentUser.uid,
+          title: this.title,
+          salary_min: this.salary_min,
+          salary_max: this.salary_max,
+          description: this.description,
+          requirements: this.requirements,
+          created_at: new Date(firebase.firestore.Timestamp.now().seconds*1000)
+        })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getCategories() {
+      console.log("pobieram kategorie");
+      db.collection("categories")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            this.categories.push({ id: doc.id, name: doc.data().name });
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+      console.log(this.categories);
     }
   }
 };
@@ -85,6 +135,6 @@ export default {
 
 <style>
 .salary {
-  width: 400px;
+  width: 300px;
 }
 </style>
