@@ -54,6 +54,7 @@ export default {
             .get()
             .then(doc => {
               offerData.company_name = doc.data().company_name;
+              offerData.company_logo = doc.data().company_logo;
               this.offers.push(offerData);
             })
             .catch(err => {

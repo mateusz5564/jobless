@@ -20,7 +20,7 @@
           <template v-slot:activator="{ on }">
             <v-btn class="mr-4 ml-2" icon v-on="on" fab>
               <v-avatar v-if="avatarSrc" size="24">
-                <img :src="avatarSrc" alt="user's avatar" />
+                <v-img :src="avatarSrc" contain alt="user's avatar"></v-img>
               </v-avatar>
             </v-btn>
           </template>
@@ -28,7 +28,8 @@
           <v-list>
             <v-list-item class="mb-2">
               <v-avatar size="40" class="mr-4">
-                <img :src="avatarSrc" alt />
+                <!-- <img :src="avatarSrc" alt /> -->
+                <v-img class="logo__img" :src="avatarSrc" height="76" contain></v-img>
               </v-avatar>
               <v-list-item-title>{{ user.email }}</v-list-item-title>
             </v-list-item>
@@ -44,6 +45,16 @@
                 <v-list-item-title>Profil</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+
+            <v-list-item link v-if="employer" :to="{name: 'employer_profile', params: {employer_id: user.uid}}">
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Profil</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
             <v-list-item @click="logout" link>
               <v-list-item-icon>
@@ -63,6 +74,8 @@
 
 <script>
 import firebase from "firebase";
+import db from "@/firebase/init";
+import { bus } from '../main'
 
 export default {
   name: "Navbar",
@@ -100,10 +113,22 @@ export default {
             ? (this.employer = true)
             : (this.employer = null);
         });
+
+          db.collection("employers")
+          .doc(user.uid)
+          .get()
+          .then(doc => {
+            this.avatarSrc = doc.data().company_logo;
+          });
+
       } else {
         this.user = null;
       }
     });
+
+    bus.$on('updateLogo', (data) =>{
+      this.avatarSrc = data
+    })
   }
 };
 </script>

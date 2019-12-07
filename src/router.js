@@ -8,6 +8,7 @@ import Login from '@/components/auth/Login'
 import NewOffer from '@/views/employer/NewOffer'
 import CV from '@/components/profile/CV'
 import CVCreator from '@/components/profile/CVCreator'
+import EmployerProfile from '@/views/employer/EmployerProfile'
 
 
 Vue.use(Router)
@@ -34,6 +35,14 @@ const router = new Router({
       name: 'logowanie',
       meta: {
         lockIfUserLogedIn: true
+      }
+    },
+    {
+      path: '/pracodawca/:employer_id',
+      name: 'employer_profile',
+      component: EmployerProfile,
+      meta: {
+        lockIfUserNotLogedIn: true
       }
     },
     {

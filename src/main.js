@@ -5,6 +5,7 @@ import vuetify from './plugins/vuetify'
 import firebase from 'firebase'
 
 
+export const bus = new Vue();
 
 //init Vue instance only once
 let app = null
