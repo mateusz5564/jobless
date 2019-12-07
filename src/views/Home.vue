@@ -13,10 +13,9 @@
     </div>
     <div class="job_offers mx-auto mt-12">
       <h2 class="mb-3 title">Najnowsze oferty pracy</h2>
-      <JobOfferThumbnail />
-      <JobOfferThumbnail />
-      <JobOfferThumbnail />
-      <JobOfferThumbnail />
+      <div v-for="(offer, index) in offers" :key="index">
+        <JobOfferThumbnail :offer="offer" />
+      </div>
     </div>
   </div>
 </template>
@@ -33,11 +32,41 @@ export default {
   },
   data() {
     return {
-      conferences: [],
+      offers: [],
       items: [],
       loading: true,
       selected: null
     };
+  },
+  created(){
+    this.getOffers()
+  },
+  methods: {
+    getOffers(){
+      db.collection("job_offers")
+      .orderBy("created_at", "desc")
+      .get()
+      .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            let offerData = doc.data();
+            offerData.id = doc.id;
+            db.collection("employers").doc(doc.data().employer_id)
+            .get()
+            .then(doc => {
+              offerData.company_name = doc.data().company_name;
+              offerData.company_logo = doc.data().company_logo;
+              this.offers.push(offerData);
+            })
+            .catch(err => {
+              console.log(err);
+            })
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      console.log(this.offers);
+    }
   }
 };
 </script>

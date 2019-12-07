@@ -14,6 +14,14 @@
           outlined
         ></v-text-field>
 
+        <v-text-field
+          color="teal"
+          v-model="location"
+          :rules="[rules.required]"
+          label="Lokalizacja"
+          outlined
+        ></v-text-field>
+
         <v-autocomplete color="teal" outlined label="Kategoria" v-model="selectedCategory" :items="categories" item-text="name" item-value="id"></v-autocomplete>
         <p class="text-center subtitle-1">Wynagrodzenie</p>
         <div class="salary mx-auto d-flex align-center">
@@ -75,11 +83,12 @@ export default {
   data() {
     return {
       title: null,
+      location: null,
+      selectedCategory: null,      
       salary_min: null,
       salary_max: null,
       description: null,
       requirements: ["Język angielski", "Prawo jazdy kat. B."],
-      selectedCategory: null,
       categories: [],
       rules: {
         required: value => !!value || "pole wymagane"
@@ -100,6 +109,7 @@ export default {
           category_id: this.selectedCategory,
           employer_id: firebase.auth().currentUser.uid,
           title: this.title,
+          location: this.location,
           salary_min: this.salary_min,
           salary_max: this.salary_max,
           description: this.description,
