@@ -18,7 +18,7 @@
               <v-icon small>mdi-calendar</v-icon>
               <span
                 class="body-2 ml-1"
-              >{{ new Date(offer.created_at.seconds * 1000).toISOString().substring(0,10) }}</span>
+              >{{ offerCreationDate }}</span>
             </div>
           </div>
 
@@ -48,7 +48,7 @@
           {{ offer.description }}
         </div>
       </v-card>
-      <div class="ml-3">
+      <div class="right_box ml-3">
         <v-card class="d-flex flex-column align-center">
           <div class="mt-3 mb-3">
             <router-link :to="{name: 'employer_profile', params: {employer_id: offer.employer_id}}">
@@ -66,6 +66,7 @@
           </p>
         </v-card>
         <v-btn
+          v-if="!this.employer"
           class="display-1 font-weight-bold"
           color="teal accent-3"
           dark
@@ -85,11 +86,27 @@ import db from "@/firebase/init";
 export default {
   data() {
     return {
+      employer: null,
       offer: {}
     };
   },
   created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        user.getIdTokenResult().then(token => {
+          token.claims.employer
+            ? (this.employer = true)
+            : (this.employer = null);
+        });
+      }
+    });
     this.getOffers();
+  },
+  computed: {
+    offerCreationDate(){
+      const date = new Date(this.offer.created_at.seconds * 1000)
+      return date.toISOString().substring(0,10)
+    }
   },
   methods: {
     getOffers() {
@@ -165,5 +182,8 @@ export default {
   min-width: 150px;
   max-width: 200px;
   text-align: end;
+}
+.right_box{
+  width: 300px;
 }
 </style>
