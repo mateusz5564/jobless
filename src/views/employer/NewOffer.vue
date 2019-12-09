@@ -129,7 +129,7 @@ export default {
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            this.categories.push({ id: doc.id, name: doc.data().name });
+            this.categories.push({ id: doc.id, name: doc.data().name, applications: []});
           });
         })
         .catch(err => {

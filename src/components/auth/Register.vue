@@ -108,6 +108,7 @@ export default {
                           skills: []
                        }})
                 .then(() => {
+                  this.$router.push({name: "home"})
                   console.log("zarejestrowano pracownika");
                 });
             });
@@ -136,6 +137,7 @@ export default {
                   company_name: this.employerName
                 })
                 .then(() => {
+                  this.$router.push({name: "home"})
                   console.log("zarejestrowano pracodawce");
                 });
             });

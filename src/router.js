@@ -9,6 +9,7 @@ import NewOffer from '@/views/employer/NewOffer'
 import CV from '@/components/profile/CV'
 import CVCreator from '@/components/profile/CVCreator'
 import EmployerProfile from '@/views/employer/EmployerProfile'
+import OfferPage from '@/views/OfferPage'
 
 
 Vue.use(Router)
@@ -41,6 +42,14 @@ const router = new Router({
       path: '/pracodawca/:employer_id',
       name: 'employer_profile',
       component: EmployerProfile,
+      meta: {
+        lockIfUserNotLogedIn: true
+      }
+    },
+    {
+      path: '/oferta_pracy/:offer_id',
+      name: 'offer_page',
+      component: OfferPage,
       meta: {
         lockIfUserNotLogedIn: true
       }

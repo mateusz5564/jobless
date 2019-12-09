@@ -7,7 +7,9 @@
         </div>
         <div class="job_offer__decription pt-3 ml-2">
           <div class="d-flex justify-space-between">
-            <span class="d-block subtitle-1 teal--text font-weight-bold">{{ offer.title }}</span>
+            <router-link :to="{ name: 'offer_page', params: {offer_id: offer.id}}">
+              <span class="d-block subtitle-1 teal--text font-weight-bold">{{ offer.title }}</span>
+            </router-link>
             <span class="d-block salary teal--text font-weight-light pr-2">{{ offer.salary_min }} <span v-if="offer.salary_max">-</span> {{ offer.salary_max }} <span v-if="offer.salary_min || offer.salary_max">PLN</span></span>
           </div>
           <div>
