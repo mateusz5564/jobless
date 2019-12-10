@@ -13,6 +13,7 @@ import OfferPage from '@/views/OfferPage'
 import UserProfile from '@/components/profile/UserProfile'
 import UserPassword from '@/components/profile/UserPassword'
 import UserEmail from '@/components/profile/UserEmail'
+import UserApplications from '@/components/profile/UserApplications'
 
 Vue.use(Router)
 
@@ -106,7 +107,7 @@ const router = new Router({
         },
         {
           path: 'applications',
-          component: null,
+          component: UserApplications,
           name: 'applications',
           props: true,
           meta: {
