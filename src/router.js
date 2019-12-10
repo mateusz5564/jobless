@@ -12,6 +12,7 @@ import EmployerProfile from '@/views/employer/EmployerProfile'
 import OfferPage from '@/views/OfferPage'
 import UserProfile from '@/components/profile/UserProfile'
 import UserPassword from '@/components/profile/UserPassword'
+import UserEmail from '@/components/profile/UserEmail'
 
 Vue.use(Router)
 
@@ -116,6 +117,11 @@ const router = new Router({
           path: 'user_profile/:user_id',
           component: UserProfile,
           name: 'user_profile'
+        },
+        {
+          path: 'user_email',
+          component: UserEmail,
+          name: 'user_email'
         },
         {
           path: 'user_password',
