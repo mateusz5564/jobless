@@ -10,7 +10,7 @@ import CV from '@/components/profile/CV'
 import CVCreator from '@/components/profile/CVCreator'
 import EmployerProfile from '@/views/employer/EmployerProfile'
 import OfferPage from '@/views/OfferPage'
-
+import UserProfile from '@/components/profile/UserProfile'
 
 Vue.use(Router)
 
@@ -110,6 +110,11 @@ const router = new Router({
           meta: {
             lockIfUserLogedIn: false
           }
+        },
+        {
+          path: 'user_profile/:user_id',
+          component: UserProfile,
+          name: 'user_profile'
         }
       ]
     }
