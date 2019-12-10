@@ -2,7 +2,7 @@
   <v-card>
     <v-container>
       <v-row>
-        <v-col cols="4">
+        <v-col cols="2">
           <v-navigation-drawer>
             <v-list-item>
               <v-list-item-icon>
@@ -28,10 +28,30 @@
                 </v-list-item-icon>
                 <v-list-item-content>Złożone aplikacje</v-list-item-content>
               </v-list-item>
+              <v-list-item link :to="{name: 'user_profile', params: {user_id: this.user.uid}}">
+                <v-list-item-icon>
+                  <v-icon color="blue">mdi-account-card-details</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>Profil</v-list-item-content>
+              </v-list-item>
+
+              <v-list-item link :to="{name: 'user_email'}">
+                <v-list-item-icon>
+                  <v-icon color="blue">mdi-email-edit</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>Email</v-list-item-content>
+              </v-list-item>
+
+              <v-list-item link :to="{name: 'user_password'}">
+                <v-list-item-icon>
+                  <v-icon color="blue">mdi-lock</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>Hasło</v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-navigation-drawer>
         </v-col>
-        <v-col cols="8">
+        <v-col cols="6">
           <router-view></router-view>
         </v-col>
       </v-row>
