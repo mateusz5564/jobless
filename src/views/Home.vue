@@ -3,10 +3,10 @@
     <div class="search_wrapper d-flex justify-center align-center">
       <v-card class="search_box d-flex justify-center align-center" height="100px" width="1100px">
         <div class="search_content search_box d-flex justify-center align-center">
-          <v-text-field class="search_job_field mr-8" color="teal" label="jakiej pracy szukasz?"></v-text-field>
-          <v-text-field class="search_location_field mr-8" color="teal" label="miejscowość"></v-text-field>
-          <v-btn color="teal" tile dark width="136px" height="40px">
-            <v-icon left>mdi-briefcase-search-outline</v-icon>Szukaj
+          <v-text-field class="search_job_field mr-8" color="teal" label="jakiej pracy szukasz?" v-model="searchValue"></v-text-field>
+          <v-text-field class="search_location_field mr-8" color="teal" label="miejscowość" v-model="searchLocation"></v-text-field>
+          <v-btn color="teal" tile dark width="136px" height="40px" @click="searchOffers">
+            <v-icon left >mdi-briefcase-search-outline</v-icon>Szukaj
           </v-btn>
         </div>
       </v-card>
@@ -35,7 +35,9 @@ export default {
       offers: [],
       items: [],
       loading: true,
-      selected: null
+      selected: null,
+      searchValue: "",
+      searchLocation: "",
     };
   },
   created(){
@@ -66,6 +68,65 @@ export default {
           console.log(err);
         });
       console.log(this.offers);
+    },
+
+    async searchOffers () {
+      this.offers = []
+
+      if (this.searchValue === "" && this.searchLocation === "") {
+        console.log("Nie podano parametru wyszukiwania. Pobieram wszystkie oferty");
+        this.getOffers()
+        return
+      }
+
+      let response = {}
+      
+      try {
+        response = await db.collection('job_offers').orderBy("created_at", "desc").get()
+
+        response.forEach(doc => {
+          let docData = doc.data()
+
+          if (this.searchValue !== "" && this.searchLocation !== "") {
+            if (docData.title.includes(this.searchValue) && docData.location === this.searchLocation) {
+              db.collection("employers").doc(doc.data().employer_id)
+                .get()
+                .then(doc => {
+                  docData.company_name = doc.data().company_name;
+                  docData.company_logo = doc.data().company_logo;
+                  this.offers.push(docData);
+                })              
+            }
+          }
+          else if (this.searchValue !== "" && this.searchLocation === "") {
+              if (docData.title.includes(this.searchValue)) {
+                db.collection("employers").doc(doc.data().employer_id)
+                  .get()
+                  .then(doc => {
+                    docData.company_name = doc.data().company_name;
+                    docData.company_logo = doc.data().company_logo;
+                    this.offers.push(docData);
+                  })              
+            }
+          }
+          else {
+            if (docData.location === this.searchLocation) {
+                db.collection("employers").doc(doc.data().employer_id)
+                  .get()
+                  .then(doc => {
+                    docData.company_name = doc.data().company_name;
+                    docData.company_logo = doc.data().company_logo;
+                    this.offers.push(docData);
+                  })              
+            }
+          }
+        })
+      }
+      catch(error) {
+        console.log(error)
+      }
+
+      console.log(this.offers)      
     }
   }
 };
