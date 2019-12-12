@@ -105,62 +105,14 @@ export default {
       employer: null
     };
   },
-  methods: {
-    logout() {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          this.user = null;
-          this.employee = null;
-          this.employer = null;
-          this.avatarSrc =
-            "https://firebasestorage.googleapis.com/v0/b/jobless-f4e79.appspot.com/o/useravatar.png?alt=media&token=fb3431ab-b73a-4446-9658-13816b381e7a";
-          this.$router.push({ name: "logowanie" });
-        });
-    }
-  },
   created() {
     this.avatarSrc =
       "https://firebasestorage.googleapis.com/v0/b/jobless-f4e79.appspot.com/o/useravatar.png?alt=media&token=fb3431ab-b73a-4446-9658-13816b381e7a";
+    this.getUserData()
 
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.user = user;
-        this.email = user.email
-        user.getIdTokenResult().then(token => {
-          token.claims.employee
-            ? (this.employee = true)
-            : (this.employee = null);
-          token.claims.employer
-            ? (this.employer = true)
-            : (this.employer = null);
-          if (this.employer) {
-            db.collection("employers")
-              .doc(user.uid)
-              .get()
-              .then(doc => {
-                let logo = doc.data().company_logo;
-                if (logo) {
-                  this.avatarSrc = logo;
-                }
-              });
-          } else {
-            db.collection("users")
-              .doc(user.uid)
-              .get()
-              .then(doc => {
-                let avatar = doc.data().avatar;
-                if (avatar) {
-                  this.avatarSrc = avatar;
-                }
-              });
-          }
-        });
-      } else {
-        this.user = null;
-      }
-    });
+    bus.$on("updateUserData", data => {
+      this.getUserData()
+    })
 
     bus.$on("updateLogo", data => {
       this.avatarSrc = data;
@@ -169,6 +121,60 @@ export default {
     bus.$on("updateEmail", data => {
       this.email = data;
     });
+  },
+  methods: {
+    getUserData() {
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          this.user = user;
+          this.email = user.email;
+          user.getIdTokenResult().then(token => {
+            token.claims.employee
+              ? (this.employee = true)
+              : (this.employee = false);
+            token.claims.employer
+              ? (this.employer = true)
+              : (this.employer = false);
+            console.log(token.claims);
+            if (this.employer) {
+              db.collection("employers")
+                .doc(user.uid)
+                .get()
+                .then(doc => {
+                  let logo = doc.data().company_logo;
+                  if (logo) {
+                    this.avatarSrc = logo;
+                  }
+                });
+            } else if (this.employee) {
+              db.collection("users")
+                .doc(user.uid)
+                .get()
+                .then(doc => {
+                  if (doc.data().avatar) {
+                    this.avatarSrc = doc.data().avatar;
+                  }
+                });
+            }
+          });
+        } else {
+          this.user = null;
+        }
+      });
+    },
+    logout() {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.user = null;
+          this.employee = false;
+          this.employer = false;
+          this.avatarSrc =
+            "https://firebasestorage.googleapis.com/v0/b/jobless-f4e79.appspot.com/o/useravatar.png?alt=media&token=fb3431ab-b73a-4446-9658-13816b381e7a";
+          this.$router.push({ name: "logowanie" });
+        });
+    }
   }
 };
 </script>
