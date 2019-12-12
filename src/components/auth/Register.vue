@@ -70,6 +70,7 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
 import functions from "firebase/functions";
+import { bus } from '../../main'
 
 export default {
   data() {
@@ -102,14 +103,26 @@ export default {
               console.log(msg);
               db.collection("users")
                 .doc(response.user.uid)
-                .set({ user_id: response.user.uid,
-                       email: response.user.email,  
-                       cv: {
-                          experiences: [],
-                          skills: []
-                       }})
+                .set({
+                  user_id: response.user.uid,
+                  email: response.user.email,
+                  cv: {
+                    experiences: [],
+                    skills: []
+                  }
+                })
                 .then(() => {
-                  this.$router.push({name: "home"})
+                  firebase
+                    .auth()
+                    .signInWithEmailAndPassword(this.email, this.password)
+                    .then(user => {
+                      this.$router.push({ name: "home" });
+                      bus.$emit("updateUserData");
+                    })
+                    .catch(err => {
+                      console.log(err);
+                      this.feedback = err.message;
+                    });
                   console.log("zarejestrowano pracownika");
                 });
             });
@@ -139,7 +152,17 @@ export default {
                   company_name: this.employerName
                 })
                 .then(() => {
-                  this.$router.push({name: "home"})
+                  firebase
+                    .auth()
+                    .signInWithEmailAndPassword(this.employerEmail, this.employerPassword)
+                    .then(user => {
+                      this.$router.push({ name: "home" });
+                      bus.$emit("updateUserData");
+                    })
+                    .catch(err => {
+                      console.log(err);
+                      this.feedback = err.message;
+                    });
                   console.log("zarejestrowano pracodawce");
                 });
             });
