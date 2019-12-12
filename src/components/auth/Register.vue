@@ -134,6 +134,7 @@ export default {
               db.collection("employers")
                 .doc(response.user.uid)
                 .set({
+                  email: response.user.email,
                   employer_id: response.user.uid,
                   company_name: this.employerName
                 })
