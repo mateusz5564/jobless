@@ -14,6 +14,7 @@ import UserProfile from '@/components/profile/UserProfile'
 import UserPassword from '@/components/profile/UserPassword'
 import UserEmail from '@/components/profile/UserEmail'
 import UserApplications from '@/components/profile/UserApplications'
+import EmployerOffers from '@/views/EmployerOffers'
 
 Vue.use(Router)
 
@@ -45,6 +46,14 @@ const router = new Router({
       path: '/pracodawca/:employer_id',
       name: 'employer_profile',
       component: EmployerProfile,
+      meta: {
+        lockIfUserNotLogedIn: true
+      }
+    },
+    {
+      path: '/moje_oferty/:employer_id',
+      name: 'moje_oferty',
+      component: EmployerOffers,
       meta: {
         lockIfUserNotLogedIn: true
       }
