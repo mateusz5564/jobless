@@ -30,7 +30,7 @@
               <!-- <img :src="avatarSrc" alt /> -->
               <v-img class="logo__img" :src="avatarSrc" height="76" contain></v-img>
             </v-avatar>
-            <v-list-item-title>{{ user.email }}</v-list-item-title>
+            <v-list-item-title>{{ email }}</v-list-item-title>
           </v-list-item>
 
           <v-divider></v-divider>
@@ -86,6 +86,7 @@ export default {
       avatarSrc:
         "https://firebasestorage.googleapis.com/v0/b/jobless-f4e79.appspot.com/o/useravatar.png?alt=media&token=fb3431ab-b73a-4446-9658-13816b381e7a",
       user: null,
+      email: "",
       employee: null,
       employer: null
     };
@@ -112,6 +113,7 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.user = user;
+        this.email = user.email
         user.getIdTokenResult().then(token => {
           token.claims.employee
             ? (this.employee = true)
@@ -129,6 +131,16 @@ export default {
                   this.avatarSrc = logo;
                 }
               });
+          } else {
+            db.collection("users")
+              .doc(user.uid)
+              .get()
+              .then(doc => {
+                let avatar = doc.data().avatar;
+                if (avatar) {
+                  this.avatarSrc = avatar;
+                }
+              });
           }
         });
       } else {
@@ -138,6 +150,10 @@ export default {
 
     bus.$on("updateLogo", data => {
       this.avatarSrc = data;
+    });
+
+    bus.$on("updateEmail", data => {
+      this.email = data;
     });
   }
 };
