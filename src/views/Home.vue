@@ -2,13 +2,25 @@
   <div class="home">
     <div class="search_wrapper d-flex justify-center align-center">
       <v-card class="search_box d-flex justify-center align-center" height="100px" width="1100px">
-        <div class="search_content search_box d-flex justify-center align-center">
-          <v-text-field class="search_job_field mr-8" color="teal" label="jakiej pracy szukasz?" v-model="searchValue"></v-text-field>
-          <v-text-field class="search_location_field mr-8" color="teal" label="miejscowość" v-model="searchLocation"></v-text-field>
-          <v-btn color="teal" tile dark width="136px" height="40px" @click="searchOffers">
-            <v-icon left >mdi-briefcase-search-outline</v-icon>Szukaj
-          </v-btn>
-        </div>
+        <v-form @submit.prevent="searchOffers">
+          <div class="search_content search_box d-flex justify-center align-center">
+            <v-text-field
+              class="search_job_field mr-8"
+              color="teal"
+              label="jakiej pracy szukasz?"
+              v-model="searchValue"
+            ></v-text-field>
+            <v-text-field
+              class="search_location_field mr-8"
+              color="teal"
+              label="miejscowość"
+              v-model="searchLocation"
+            ></v-text-field>
+            <v-btn color="teal" tile dark width="136px" height="40px" type="submit">
+              <v-icon left>mdi-briefcase-search-outline</v-icon>Szukaj
+            </v-btn>
+          </div>
+        </v-form>
       </v-card>
     </div>
     <div class="job_offers mx-auto mt-12">
@@ -37,31 +49,32 @@ export default {
       loading: true,
       selected: null,
       searchValue: "",
-      searchLocation: "",
+      searchLocation: ""
     };
   },
-  created(){
-    this.getOffers()
+  created() {
+    this.getOffers();
   },
   methods: {
-    getOffers(){
+    getOffers() {
       db.collection("job_offers")
-      .orderBy("created_at", "desc")
-      .get()
-      .then(querySnapshot => {
+        .orderBy("created_at", "desc")
+        .get()
+        .then(querySnapshot => {
           querySnapshot.forEach(doc => {
             let offerData = doc.data();
             offerData.id = doc.id;
-            db.collection("employers").doc(doc.data().employer_id)
-            .get()
-            .then(doc => {
-              offerData.company_name = doc.data().company_name;
-              offerData.company_logo = doc.data().company_logo;
-              this.offers.push(offerData);
-            })
-            .catch(err => {
-              console.log(err);
-            })
+            db.collection("employers")
+              .doc(doc.data().employer_id)
+              .get()
+              .then(doc => {
+                offerData.company_name = doc.data().company_name;
+                offerData.company_logo = doc.data().company_logo;
+                this.offers.push(offerData);
+              })
+              .catch(err => {
+                console.log(err);
+              });
           });
         })
         .catch(err => {
@@ -70,63 +83,74 @@ export default {
       console.log(this.offers);
     },
 
-    async searchOffers () {
-      this.offers = []
+    async searchOffers() {
+      this.offers = [];
 
       if (this.searchValue === "" && this.searchLocation === "") {
-        console.log("Nie podano parametru wyszukiwania. Pobieram wszystkie oferty");
-        this.getOffers()
-        return
+        console.log(
+          "Nie podano parametru wyszukiwania. Pobieram wszystkie oferty"
+        );
+        this.getOffers();
+        return;
       }
 
-      let response = {}
-      
+      let response = {};
+
       try {
-        response = await db.collection('job_offers').orderBy("created_at", "desc").get()
+        response = await db
+          .collection("job_offers")
+          .orderBy("created_at", "desc")
+          .get();
 
         response.forEach(doc => {
-          let docData = doc.data()
+          let docData = doc.data();
 
           if (this.searchValue !== "" && this.searchLocation !== "") {
-            if (docData.title.includes(this.searchValue) && docData.location === this.searchLocation) {
-              db.collection("employers").doc(doc.data().employer_id)
+            if (
+              docData.title
+                .toLowerCase()
+                .includes(this.searchValue.toLowerCase()) &&
+              docData.location.toLowerCase() ===
+                this.searchLocation.toLowerCase()
+            ) {
+              db.collection("employers")
+                .doc(doc.data().employer_id)
                 .get()
                 .then(doc => {
                   docData.company_name = doc.data().company_name;
                   docData.company_logo = doc.data().company_logo;
                   this.offers.push(docData);
-                })              
+                });
+            }
+          } else if (this.searchValue !== "" && this.searchLocation === "") {
+            if (docData.title.includes(this.searchValue)) {
+              db.collection("employers")
+                .doc(doc.data().employer_id)
+                .get()
+                .then(doc => {
+                  docData.company_name = doc.data().company_name;
+                  docData.company_logo = doc.data().company_logo;
+                  this.offers.push(docData);
+                });
+            }
+          } else {
+            if (docData.location.toLowerCase() === this.searchLocation.toLowerCase()) {
+              db.collection("employers")
+                .doc(doc.data().employer_id)
+                .get()
+                .then(doc => {
+                  docData.company_name = doc.data().company_name;
+                  docData.company_logo = doc.data().company_logo;
+                  this.offers.push(docData);
+                });
             }
           }
-          else if (this.searchValue !== "" && this.searchLocation === "") {
-              if (docData.title.includes(this.searchValue)) {
-                db.collection("employers").doc(doc.data().employer_id)
-                  .get()
-                  .then(doc => {
-                    docData.company_name = doc.data().company_name;
-                    docData.company_logo = doc.data().company_logo;
-                    this.offers.push(docData);
-                  })              
-            }
-          }
-          else {
-            if (docData.location === this.searchLocation) {
-                db.collection("employers").doc(doc.data().employer_id)
-                  .get()
-                  .then(doc => {
-                    docData.company_name = doc.data().company_name;
-                    docData.company_logo = doc.data().company_logo;
-                    this.offers.push(docData);
-                  })              
-            }
-          }
-        })
-      }
-      catch(error) {
-        console.log(error)
+        });
+      } catch (error) {
+        console.log(error);
       }
 
-      console.log(this.offers)      
+      console.log(this.offers);
     }
   }
 };
@@ -146,7 +170,7 @@ export default {
   border-radius: 50px;
   opacity: 0.95;
 }
-.search_content{
+.search_content {
   width: 900px;
 }
 .job_offers {
