@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="search_wrapper d-flex justify-center align-center">
-      <v-card class="search_box d-flex justify-center align-center" height="100px" width="1100px">
+      <v-card class="search_box d-flex justify-center align-center" height="100px" width="1000px">
         <v-form @submit.prevent="searchOffers">
           <div class="search_content search_box d-flex justify-center align-center">
             <v-text-field
@@ -23,8 +23,8 @@
         </v-form>
       </v-card>
     </div>
-    <div class="job_offers mx-auto mt-12">
-      <h2 class="mb-3 title">Najnowsze oferty pracy</h2>
+    <div class="job_offers mx-auto mt-12 mb-12">
+      <h2 class="mb-3 title">Oferty pracy</h2>
       <div v-for="(offer, index) in offers" :key="index">
         <JobOfferThumbnail :offer="offer" />
       </div>
