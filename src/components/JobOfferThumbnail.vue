@@ -29,10 +29,10 @@
           <span class="d-block caption ml-1"> {{ new Date(offer.created_at.seconds * 1000).toISOString().substring(0,10) }}</span>
         </div>
         
-        <div class="d-flex">
+        <!-- <div class="d-flex">
           <span class="mr-1 follow font-weight-light">obserwuj</span>
           <v-icon color="teal">mdi-star-outline</v-icon>
-        </div>
+        </div> -->
       </div>
     </v-card>
   </div>
