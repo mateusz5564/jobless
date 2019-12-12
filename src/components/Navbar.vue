@@ -59,6 +59,20 @@
             </v-list-item-content>
           </v-list-item>
 
+          <v-list-item
+            link
+            v-if="employer"
+            :to="{name: 'moje_oferty', params: {employer_id: user.uid}}"
+          >
+            <v-list-item-icon>
+              <v-icon color="green">mdi-account-badge-horizontal</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Moje oferty</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item @click="logout" link>
             <v-list-item-icon>
               <v-icon>mdi-logout-variant</v-icon>
