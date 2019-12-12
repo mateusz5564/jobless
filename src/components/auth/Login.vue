@@ -35,13 +35,16 @@
         </v-tab-item>
       </v-tabs-items>
     </v-card>
+    <v-overlay :value="loading">
+      <v-progress-circular v-if="this.loading" :width="6" :size="100" color="teal" indeterminate></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
 <script>
-import db from '@/firebase/init'
-import firebase from 'firebase'
-import functions from 'firebase/functions'
+import db from "@/firebase/init";
+import firebase from "firebase";
+import functions from "firebase/functions";
 
 export default {
   data() {
@@ -50,6 +53,7 @@ export default {
       email: null,
       password: null,
       feedback: null,
+      loading: false,
       rules: {
         notEmpty: [val => (val || "").length > 0 || "pole wymagane"]
       }
@@ -58,21 +62,25 @@ export default {
   methods: {
     login() {
       if (this.email && this.password) {
+        this.loading = true;
         firebase
           .auth()
           .signInWithEmailAndPassword(this.email, this.password)
           .then(user => {
             this.$router.push({ name: "home" });
+            this.loading = false;
           })
           .catch(err => {
-            console.log(err)
+            console.log(err);
             this.feedback = err.message;
+            this.loading = false;
           });
         this.feedback = null;
       } else {
         this.feedback = "Wypełnij wszystkie pola";
+        this.loading = false;
       }
-    },
+    }
   }
 };
 </script>

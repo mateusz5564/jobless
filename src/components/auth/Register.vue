@@ -63,6 +63,9 @@
         </v-tab-item>
       </v-tabs-items>
     </v-card>
+    <v-overlay :value="loading">
+      <v-progress-circular v-if="this.loading" :width="6" :size="100" color="teal" indeterminate></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -81,6 +84,7 @@ export default {
       employerName: null,
       employerEmail: null,
       employerPassword: null,
+      loading: false,
       rules: {
         notEmpty: [val => (val || "").length > 0 || "pole wymagane"]
       }
@@ -95,6 +99,7 @@ export default {
       const addEmployee = firebase.functions().httpsCallable("addEmployee");
 
       if (this.email && this.password) {
+        this.loading = true;
         firebase
           .auth()
           .createUserWithEmailAndPassword(this.email, this.password)
@@ -116,11 +121,13 @@ export default {
                     .auth()
                     .signInWithEmailAndPassword(this.email, this.password)
                     .then(user => {
+                      this.loading = false;
                       this.$router.push({ name: "home" });
                       bus.$emit("updateUserData");
                     })
                     .catch(err => {
                       console.log(err);
+                      this.loading = false;
                       this.feedback = err.message;
                     });
                   console.log("zarejestrowano pracownika");
@@ -128,6 +135,7 @@ export default {
             });
           })
           .catch(err => {
+            this.loading = false;
             console.log(err);
           });
       }
@@ -136,6 +144,7 @@ export default {
       const addEmployer = firebase.functions().httpsCallable("addEmployer");
 
       if (this.employerName && this.employerEmail && this.employerPassword) {
+        this.loading = true;
         firebase
           .auth()
           .createUserWithEmailAndPassword(
@@ -156,11 +165,13 @@ export default {
                     .auth()
                     .signInWithEmailAndPassword(this.employerEmail, this.employerPassword)
                     .then(user => {
+                      this.loading = false;
                       this.$router.push({ name: "home" });
                       bus.$emit("updateUserData");
                     })
                     .catch(err => {
                       console.log(err);
+                      this.loading = false;
                       this.feedback = err.message;
                     });
                   console.log("zarejestrowano pracodawce");
@@ -168,6 +179,7 @@ export default {
             });
           })
           .catch(err => {
+            this.loading = false;
             console.log(err);
           });
       }
