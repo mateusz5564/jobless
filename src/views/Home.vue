@@ -24,7 +24,7 @@
       </v-card>
     </div>
     <div class="job_offers mx-auto mt-12 mb-12">
-      <v-container>
+      <v-container v-if="!loading">
         <v-row>
           <v-col cols="2">
             <h2 v-if="this.offers.length > 0" class="mb-3 title">Oferty pracy</h2>
