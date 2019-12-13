@@ -69,6 +69,10 @@
             </v-card>
     </v-card>
 
+    <v-overlay :value="loading">
+      <v-progress-circular v-if="this.loading" :width="6" :size="100" color="teal" indeterminate></v-progress-circular>
+    </v-overlay>
+
     <v-snackbar v-model="snackbar" :color="color" top :timeout="timeout">
       <div>
         <v-icon class="mr-2">{{icon}}</v-icon>
@@ -95,6 +99,7 @@ export default {
       currentUser: null,
       dialog: false,
       snackbar: false,
+      loading: false,
       color: "",
       icon: "",
       text: "",
@@ -119,6 +124,8 @@ export default {
             this.email = user.email
             if (this.profile.avatar) {
               this.avatarSrc = this.profile.avatar;
+            } else {
+              this.avatarSrc = "https://firebasestorage.googleapis.com/v0/b/jobless-f4e79.appspot.com/o/useravatar.png?alt=media&token=fb3431ab-b73a-4446-9658-13816b381e7a";
             }
             if (doc.data().user_id === user.uid) {
               this.isOwner = true;
@@ -135,6 +142,7 @@ export default {
       this.selectedImage = event.target.files[0];
 
       if (this.selectedImage) {
+        this.loading = true;
         const filename = this.selectedImage.name;
         const extension = filename.substring(
           filename.lastIndexOf("."),
@@ -154,7 +162,8 @@ export default {
                 .put(this.selectedImage)
                 .then(response => {
                   console.log(response)
-                  response.ref.getDownloadURL().then(downloadURL => {
+                  response.ref.getDownloadURL()
+                  .then(downloadURL => {
                     db.collection("users")
                       .doc(user.uid)
                       .update({ avatar: downloadURL })
@@ -163,13 +172,22 @@ export default {
                         this.avatarSrc = downloadURL;
                         this.profile.avatar = downloadURL;
                         bus.$emit("updateLogo", downloadURL);
+                        this.loading = false;
                         this.setSnackbar2("success", "Logo zostało zmienione!");
                       });
-                  });
-                });
+                  }).catch(err => {
+                    console.log(err);
+                    this.loading = false;
+                  })
+                })
+                .catch(err => {
+                  console.log(err)
+                  this.loading = false;
+                })
             })
             .catch(err => {
               console.log(err);
+              this.loading = false;
               this.setSnackbar2("error", "Nie udało się zmienić logo!");
             });
         } else {
@@ -178,7 +196,8 @@ export default {
             .ref("avatars/" + user.uid + extension)
             .put(this.selectedImage)
             .then(response => {
-              response.ref.getDownloadURL().then(downloadURL => {
+              response.ref.getDownloadURL()
+              .then(downloadURL => {
                 db.collection("users")
                   .doc(user.uid)
                   .update({ avatar: downloadURL })
@@ -187,10 +206,19 @@ export default {
                     this.avatarSrc = downloadURL;
                     this.profile.avatar = downloadURL;
                     bus.$emit("updateLogo", downloadURL);
+                    this.loading = false;
                     this.setSnackbar2("success", "Logo zostało zmienione!");
                   });
-              });
-            });
+              })
+              .catch(err => {
+                console.log(err);
+                this.loading = false;
+              })
+            })
+            .catch(err => {
+              console.log(err);
+              this.loading = false;
+            })
         }
       }
     },
