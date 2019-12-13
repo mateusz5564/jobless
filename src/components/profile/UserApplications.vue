@@ -1,6 +1,9 @@
 <template>
   <div class="home">
     <div class="job_offers mx-auto">
+      <div v-if="noApplications">
+        <p>Jeszcze nie zaaplikowano na żadną ofertę</p>
+      </div>
       <div class="elevation-1" v-for="(offer, index) in offers" :key="index">
         <JobOfferThumbnail :offer="offer" />
       </div>
@@ -24,6 +27,7 @@ export default {
       items: [],
       loading: true,
       selected: null,
+      noApplications: false
     };
   },
   created(){
@@ -31,12 +35,14 @@ export default {
   },
   methods: {
     getOffers(){
-
       db.collection("applications")
       .where("user_id", "==", firebase.auth().currentUser.uid)
       .orderBy("created_at", "desc")
       .get()
-      .then(querySnapshot =>{
+      .then(querySnapshot => {
+        if(querySnapshot.empty){
+          this.noApplications = true;
+        }
         querySnapshot.forEach(doc => {
           db.collection('job_offers')
           .doc(doc.data().offer_id)
