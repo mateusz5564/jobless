@@ -104,8 +104,7 @@ export default {
       email: null,
       newPassword: null,
       selectedImage: null,
-      avatarSrc:
-        "https://firebasestorage.googleapis.com/v0/b/konferencje-95600.appspot.com/o/avatars%2FdefaultAvatar.png?alt=media&token=f5fbdbef-b80e-41e5-bf48-e99b0d6f91a6",
+      avatarSrc: "",
     };
   },
   created() {
