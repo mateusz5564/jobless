@@ -24,7 +24,12 @@
       </v-card>
     </div>
     <div class="job_offers mx-auto mt-12 mb-12">
-      <h2 class="mb-3 title">Oferty pracy</h2>
+      <h2 v-if="this.offers.length > 0" class="mb-3 title">Oferty pracy</h2>
+      <div v-if="noOffers">
+        <p> Nie znaleziono ofert odpowiadających wyszukiwaniu </p> 
+        <v-btn class="mt-2" text color="teal" outlined @click="handleNoOffersButton">pokaż wszystkie oferty</v-btn>
+      </div>
+      <v-progress-linear v-if="loading" class="mt-2" indeterminate color="teal"></v-progress-linear>
       <div v-for="(offer, index) in offers" :key="index">
         <JobOfferThumbnail :offer="offer" />
       </div>
@@ -49,14 +54,21 @@ export default {
       loading: true,
       selected: null,
       searchValue: "",
-      searchLocation: ""
+      searchLocation: "",
+      noOffers: false,
     };
   },
   created() {
     this.getOffers();
   },
   methods: {
+    handleNoOffersButton(){
+      this.getOffers()
+      this.searchValue = "";
+      this.searchLocation = "";
+    },
     getOffers() {
+      this.loading = true;
       db.collection("job_offers")
         .orderBy("created_at", "desc")
         .get()
@@ -70,21 +82,27 @@ export default {
               .then(doc => {
                 offerData.company_name = doc.data().company_name;
                 offerData.company_logo = doc.data().company_logo;
+                this.loading = false;
+                this.noOffers = false;
                 this.offers.push(offerData);
               })
               .catch(err => {
+                this.loading = false;
                 console.log(err);
               });
           });
         })
         .catch(err => {
+          this.loading = false;
           console.log(err);
         });
       console.log(this.offers);
     },
 
     async searchOffers() {
+      this.noOffers = false;
       this.offers = [];
+      this.loading = true;
 
       if (this.searchValue === "" && this.searchLocation === "") {
         console.log(
@@ -119,38 +137,68 @@ export default {
                 .then(doc => {
                   docData.company_name = doc.data().company_name;
                   docData.company_logo = doc.data().company_logo;
+                  this.loading = false;
+                  this.noOffers = false;
                   this.offers.push(docData);
-                });
+                })
+                .catch(err => {
+                  this.loading = false;
+                })
+            } else {
+              this.loading = false;
+              this.noOffers = true;
+              console.log("nie znaleziono")
             }
           } else if (this.searchValue !== "" && this.searchLocation === "") {
-            if (docData.title.includes(this.searchValue)) {
+            if (docData.title.toLowerCase().includes(this.searchValue.toLowerCase())) {
               db.collection("employers")
                 .doc(doc.data().employer_id)
                 .get()
                 .then(doc => {
                   docData.company_name = doc.data().company_name;
                   docData.company_logo = doc.data().company_logo;
+                  this.loading = false;
+                  this.noOffers = false;
                   this.offers.push(docData);
-                });
+                })
+                .catch(err => {
+                  console.log(err)
+                  this.loading = false;
+                })
+            } else {
+              this.loading = false;
+              this.noOffers = true;
+              console.log("nie znaleziono")
             }
           } else {
-            if (docData.location.toLowerCase() === this.searchLocation.toLowerCase()) {
+            if (
+              docData.location.toLowerCase() ===
+              this.searchLocation.toLowerCase()
+            ) {
               db.collection("employers")
                 .doc(doc.data().employer_id)
                 .get()
                 .then(doc => {
                   docData.company_name = doc.data().company_name;
                   docData.company_logo = doc.data().company_logo;
+                  this.loading = false;
+                  this.noOffers = false;
                   this.offers.push(docData);
-                });
+                })
+                .catch(err => {
+                  this.loading = false;
+                })
+            } else {
+              this.loading = false;
+              this.noOffers = true;
+              console.log("nie znaleziono")
             }
           }
         });
       } catch (error) {
+        this.loading = false;
         console.log(error);
       }
-
-      console.log(this.offers);
     }
   }
 };
