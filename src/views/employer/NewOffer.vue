@@ -5,7 +5,7 @@
         <h2 class="headline mb-5">Nowa oferta</h2>
       </v-card-title>
 
-      <v-form @submit.prevent="addOffer">
+      <v-form @submit.prevent="addOffer" ref="offer_form">
         <v-text-field
           color="teal"
           v-model="title"
@@ -22,7 +22,16 @@
           outlined
         ></v-text-field>
 
-        <v-autocomplete color="teal" outlined label="Kategoria" v-model="selectedCategory" :items="categories" item-text="name" item-value="id"></v-autocomplete>
+        <v-autocomplete
+          color="teal"
+          outlined
+          label="Kategoria"
+          v-model="selectedCategory"
+          :rules="[rules.required]"
+          :items="categories"
+          item-text="name"
+          item-value="id"
+        ></v-autocomplete>
         <p class="text-center subtitle-1">Wynagrodzenie</p>
         <div class="salary mx-auto d-flex align-center">
           <v-text-field
@@ -84,10 +93,11 @@ export default {
     return {
       title: null,
       location: null,
-      selectedCategory: null,      
+      selectedCategory: null,
       salary_min: null,
       salary_max: null,
       description: null,
+      user: null,
       requirements: ["Język angielski", "Prawo jazdy kat. B."],
       categories: [],
       rules: {
@@ -97,6 +107,7 @@ export default {
   },
   created() {
     this.getCategories();
+    this.userId = firebase.auth().currentUser.uid
   },
   methods: {
     remove(item) {
@@ -104,32 +115,41 @@ export default {
       this.requirements = [...this.requirements];
     },
     addOffer() {
-      db.collection("job_offers")
-        .add({
-          category_id: this.selectedCategory,
-          employer_id: firebase.auth().currentUser.uid,
-          title: this.title,
-          location: this.location,
-          salary_min: this.salary_min,
-          salary_max: this.salary_max,
-          description: this.description,
-          requirements: this.requirements,
-          created_at: new Date(firebase.firestore.Timestamp.now().seconds*1000)
-        })
-        .then(response => {
-          console.log(response);
-          console.log("poprawnie dodano oferte")
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      if (this.$refs.offer_form.validate()) {
+        db.collection("job_offers")
+          .add({
+            category_id: this.selectedCategory,
+            employer_id: this.userId,
+            title: this.title,
+            location: this.location,
+            salary_min: this.salary_min,
+            salary_max: this.salary_max,
+            description: this.description,
+            requirements: this.requirements,
+            created_at: new Date(
+              firebase.firestore.Timestamp.now().seconds * 1000
+            )
+          })
+          .then(response => {
+            console.log(response);
+            this.$router.push({name: 'moje_oferty', params: {employer_id: this.userId}});
+            console.log("poprawnie dodano oferte");
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      } 
     },
     getCategories() {
       db.collection("categories")
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            this.categories.push({ id: doc.id, name: doc.data().name, applications: []});
+            this.categories.push({
+              id: doc.id,
+              name: doc.data().name,
+              applications: []
+            });
           });
         })
         .catch(err => {
