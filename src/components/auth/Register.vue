@@ -29,6 +29,9 @@
                 outlined
                 color="teal"
               ></v-text-field>
+              <div v-if="feedback" class="mb-8 text-center">
+                <p class="red--text">{{ feedback }}</p>
+              </div>
               <div class="d-flex align-center justify-center">
                 <v-btn type="submit" dark color="teal">Zarejestruj się</v-btn>
               </div>
@@ -55,6 +58,9 @@
                 outlined
                 color="teal"
               ></v-text-field>
+              <div v-if="feedbackEmployer" class="mb-8 text-center">
+                <p class="red--text">{{ feedbackEmployer }}</p>
+              </div>
               <div class="d-flex align-center justify-center">
                 <v-btn type="submit" dark color="teal">Zarejestruj się</v-btn>
               </div>
@@ -84,6 +90,8 @@ export default {
       employerName: null,
       employerEmail: null,
       employerPassword: null,
+      feedback: "",
+      feedbackEmployer: "",
       loading: false,
       rules: {
         notEmpty: [val => (val || "").length > 0 || "pole wymagane"]
@@ -136,8 +144,11 @@ export default {
           })
           .catch(err => {
             this.loading = false;
+            this.feedback = err.message
             console.log(err);
           });
+      } else {
+        this.feedback = "Wypełnij wszystkie pola!"
       }
     },
     signUpEmployer() {
@@ -172,7 +183,7 @@ export default {
                     .catch(err => {
                       console.log(err);
                       this.loading = false;
-                      this.feedback = err.message;
+                      this.feedbackEmployer = err.message;
                     });
                   console.log("zarejestrowano pracodawce");
                 });
@@ -180,8 +191,11 @@ export default {
           })
           .catch(err => {
             this.loading = false;
+            this.feedbackEmployer = err.message;
             console.log(err);
           });
+      } else {
+        this.feedbackEmployer = "Wypełnij wszystkie pola!"
       }
     }
   }

@@ -27,6 +27,9 @@
                 outlined
                 color="teal"
               ></v-text-field>
+              <div v-if="feedback" class="mb-8 text-center">
+                <p class="red--text">{{ feedback }}</p>
+              </div>
               <div class="d-flex align-center justify-center">
                 <v-btn type="submit" dark color="teal">Zaloguj się</v-btn>
               </div>
