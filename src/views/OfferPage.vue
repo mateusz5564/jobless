@@ -16,9 +16,7 @@
             </div>
             <div class="d-flex mt-1">
               <v-icon small>mdi-calendar</v-icon>
-              <span
-                class="body-2 ml-1"
-              >{{ offerCreationDate }}</span>
+              <span class="body-2 ml-1">{{ offerCreationDate }}</span>
             </div>
           </div>
 
@@ -73,9 +71,19 @@
           width="300px"
           height="70px"
           @click="apply"
-        >APLIKUJ</v-btn>
+        >{{ applyBtnText }}</v-btn>
       </div>
     </div>
+
+    <v-snackbar v-model="snackbar" :color="color" top :timeout="timeout">
+      <div>
+        <v-icon class="mr-2">{{icon}}</v-icon>
+        {{ text }}
+      </div>
+      <v-btn text @click="snackbar = false">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -88,6 +96,12 @@ export default {
     return {
       employer: null,
       user: null,
+      applyBtnText: "aplikuj",
+      snackbar: false,
+      color: "",
+      icon: "",
+      text: "",
+      timeout: 5000,
       offer: {}
     };
   },
@@ -103,6 +117,16 @@ export default {
       }
     });
     this.getOffers();
+    db.collection("applications")
+      .where("offer_id", "==", this.$route.params.offer_id)
+      .where("user_id", "==", firebase.auth().currentUser.uid)
+      .get()
+      .then(doc => {
+        if (!doc.empty) {
+          this.applyBtnText = "zaaplikowano";
+          this.disabled = true;
+        }
+      })
   },
   computed: {
     offerCreationDate(){
@@ -134,7 +158,6 @@ export default {
           console.log(err);
         });
     },
-    //v1
     apply() {
       console.log("aplikowanie");
       db.collection("users")
@@ -161,18 +184,32 @@ export default {
                     })
                     .then(res => {
                       console.log("zaaplikowano");
+                      this.setSnackbar("success", "Zaaplikowano na tę ofertę!");
                     })
                     .catch(err => {
                       console.log(err);
+                      this.setSnackbar("error", "Nie udało się zaaplikować");
                     });
                 } else {
                   console.log("już aplikowano!!!");
+                  this.setSnackbar("error", "Już aplikowano na tę ofertę!");
                 }
               });
           } else {
             console.log("nie uzupełniono cv");
+            this.setSnackbar("error", "Uzupełnij swoje cv!");
           }
         });
+    },
+    setSnackbar(color, text) {
+      this.color = color;
+      this.text = text;
+      if (color == "success") {
+        this.icon = "mdi-check-circle";
+      } else {
+        this.icon = "mdi-alert-circle";
+      }
+      this.snackbar = true;
     }
   }
 };
@@ -185,7 +222,7 @@ export default {
   max-width: 200px;
   text-align: end;
 }
-.right_box{
+.right_box {
   width: 300px;
 }
 </style>
