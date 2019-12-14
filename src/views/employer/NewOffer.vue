@@ -39,11 +39,12 @@
             class="mr-5"
             filled
             rounded
+            :rules="[rules.positive]"
             color="teal"
             v-model="salary_min"
             label="od"
           ></v-text-field>
-          <v-text-field filled rounded color="teal" v-model="salary_max" label="do"></v-text-field>
+          <v-text-field filled rounded :rules="[rules.positive]" color="teal" v-model="salary_max" label="do"></v-text-field>
         </div>
         <v-textarea
           color="teal"
@@ -101,7 +102,14 @@ export default {
       requirements: ["Język angielski", "Prawo jazdy kat. B."],
       categories: [],
       rules: {
-        required: value => !!value || "pole wymagane"
+        required: value => !!value || "pole wymagane",
+        positive: value => {
+          if(value) {
+            return value >= 1 || "podaj poprawną wartość";
+          } else {
+            return true
+          }
+        }
       }
     };
   },
