@@ -26,7 +26,7 @@
             <v-btn text color="blue accent-4" @click="addNewExperience()">Dodaj</v-btn>
           </v-col>
         </v-row>
-        <span v-for="(experience, index) in experiences" :key="index">
+        <span v-for="(experience, index) in experiences" :key="`item-${index}`">
           <v-divider></v-divider>
           <v-row>
             <v-col cols="10">Wpis nr {{ index + 1 }}</v-col>
