@@ -24,10 +24,53 @@
       </v-card>
     </div>
     <div class="job_offers mx-auto mt-12 mb-12">
-      <h2 v-if="this.offers.length > 0" class="mb-3 title">Oferty pracy</h2>
+      <v-container v-if="!loading">
+        <v-row>
+          <v-col cols="2">
+            <h2 v-if="this.offers.length > 0" class="mb-3 title">Oferty pracy</h2>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="1">
+            <v-badge color="teal">
+              <v-btn small text @click="toggleFilterMenu">Filtrowanie</v-btn>
+              <template v-slot:badge v-if="filterState.isFiltered">{{filterState.filtersCount}}</template>
+            </v-badge>
+          </v-col>
+        </v-row>
+        <v-card v-if="filterMenuOn">
+          <v-row>
+            <v-col
+              v-for="(category, index) in categories"
+              :key="index"
+              cols="4"
+              class="text-center"
+            >
+              <v-checkbox
+                v-model="selected_filter_categories"
+                :label="category.name"
+                :value="category"
+                color="teal darken-1"
+                class="pl-12"
+              ></v-checkbox>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="text-center" cols="12">
+              <v-btn color="teal" tile dark @click="filterOffers">{{ filterState.isFiltered ? 'Wyczyść filtr' : 'Filtruj'}}</v-btn>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-container>
+
       <div v-if="noOffers">
-        <p> Nie znaleziono ofert odpowiadających wyszukiwaniu </p> 
-        <v-btn class="mt-2" text color="teal" outlined @click="handleNoOffersButton">pokaż wszystkie oferty</v-btn>
+        <p>Nie znaleziono ofert odpowiadających wyszukiwaniu</p>
+        <v-btn
+          class="mt-2"
+          text
+          color="teal"
+          outlined
+          @click="handleNoOffersButton"
+        >pokaż wszystkie oferty</v-btn>
       </div>
       <v-progress-linear v-if="loading" class="mt-2" indeterminate color="teal"></v-progress-linear>
       <div v-for="(offer, index) in offers" :key="index">
@@ -49,21 +92,29 @@ export default {
   },
   data() {
     return {
+      categories: [],
+      selected_filter_categories: [],
+      filterState: {
+        isFiltered: false,
+        filtersCount: 0
+      },
       offers: [],
       items: [],
       loading: true,
       selected: null,
       searchValue: "",
       searchLocation: "",
-      noOffers: false,
+      filterMenuOn: false,
+      noOffers: false
     };
   },
   created() {
     this.getOffers();
+    this.getCategories();
   },
   methods: {
-    handleNoOffersButton(){
-      this.getOffers()
+    handleNoOffersButton() {
+      this.getOffers();
       this.searchValue = "";
       this.searchLocation = "";
     },
@@ -97,6 +148,22 @@ export default {
           console.log(err);
         });
       console.log(this.offers);
+    },
+
+    getCategories() {
+      db.collection("categories")
+        .orderBy("name")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            let category = doc.data();
+            category.id = doc.id;
+            this.categories.push(category);
+          });
+        })
+        .then(() => {
+          console.log(this.categories);
+        });
     },
 
     async searchOffers() {
@@ -143,14 +210,18 @@ export default {
                 })
                 .catch(err => {
                   this.loading = false;
-                })
+                });
             } else {
               this.loading = false;
               this.noOffers = true;
-              console.log("nie znaleziono")
+              console.log("nie znaleziono");
             }
           } else if (this.searchValue !== "" && this.searchLocation === "") {
-            if (docData.title.toLowerCase().includes(this.searchValue.toLowerCase())) {
+            if (
+              docData.title
+                .toLowerCase()
+                .includes(this.searchValue.toLowerCase())
+            ) {
               db.collection("employers")
                 .doc(doc.data().employer_id)
                 .get()
@@ -162,13 +233,13 @@ export default {
                   this.offers.push(docData);
                 })
                 .catch(err => {
-                  console.log(err)
+                  console.log(err);
                   this.loading = false;
-                })
+                });
             } else {
               this.loading = false;
               this.noOffers = true;
-              console.log("nie znaleziono")
+              console.log("nie znaleziono");
             }
           } else {
             if (
@@ -187,11 +258,11 @@ export default {
                 })
                 .catch(err => {
                   this.loading = false;
-                })
+                });
             } else {
               this.loading = false;
               this.noOffers = true;
-              console.log("nie znaleziono")
+              console.log("nie znaleziono");
             }
           }
         });
@@ -199,6 +270,41 @@ export default {
         this.loading = false;
         console.log(error);
       }
+    },
+
+    toggleFilterMenu() {
+      this.filterMenuOn = !this.filterMenuOn;
+    },
+
+    filterOffers() {
+      if (this.selected_filter_categories.length === 0) {
+        console.log("Nie wybrano zadnej kategorii");
+        this.getOffers();
+        return;
+      }
+
+      if (this.filterState.isFiltered) {
+        this.offers = []
+        this.getOffers()
+        this.filterState.isFiltered = false
+        this.filterState.filtersCount = 0
+        return
+      }
+
+      this.offers = this.offers.filter(offer => {
+        for (let category of this.selected_filter_categories) {
+          console.log(category);
+
+          if (offer.category_id === category.id) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+
+      this.filterState.isFiltered = true;
+      this.filterState.filtersCount = this.selected_filter_categories.length;
     }
   }
 };
