@@ -50,12 +50,12 @@
       </v-card>
       <div class="right_box ml-3">
         <v-card class="d-flex flex-column align-center">
-          <div class="mt-3 mb-3">
+          <div v-if="offer.company_logo" class="mt-3 mb-3">
             <router-link :to="{name: 'employer_profile', params: {employer_id: offer.employer_id}}">
               <v-img height="120" width="120" contain :src="offer.company_logo"></v-img>
             </router-link>
           </div>
-          <p class="mb-5 grey--text">
+          <p class="mb-5 mt-5 grey--text">
             Firma:
             <router-link
               style="text-decoration: none;"

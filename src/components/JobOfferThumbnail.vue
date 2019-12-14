@@ -2,10 +2,10 @@
   <div class="job_offer_thumbnail">
     <v-card class="d-flex flex-column justify-space-between white mb-2" flat height="130px">
       <div class="job_offer__up d-flex">
-        <div class="job_offer__logo d-flex flex-column justify-space-between pt-4 pl-4 pr-2">
+        <div v-if="offer.company_logo" class="job_offer__logo d-flex flex-column justify-space-between pt-4 pl-4 pr-2">
           <v-img height="50" contain :src="offer.company_logo"></v-img>
         </div>
-        <div class="job_offer__decription pt-3 ml-2">
+        <div class="job_offer__decription pt-3 ml-4">
           <div class="d-flex justify-space-between">
             <router-link :to="{ name: 'offer_page', params: {offer_id: offer.id}}">
               <span class="d-block subtitle-1 teal--text font-weight-bold">{{ offer.title }}</span>
