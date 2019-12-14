@@ -218,6 +218,17 @@ export default {
             }
             this.loading = false;
           });
+      } else {
+        db.collection("employers")
+          .doc(this.$route.params.employer_id)
+          .get()
+          .then(doc => {
+            this.profile = doc.data();
+            if (this.profile.company_logo) {
+              this.avatarSrc = this.profile.company_logo;
+            }
+            this.loading = false;
+          });
       }
     });
     this.loading = false;

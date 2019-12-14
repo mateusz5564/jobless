@@ -46,9 +46,6 @@ const router = new Router({
       path: '/pracodawca/:employer_id',
       name: 'employer_profile',
       component: EmployerProfile,
-      meta: {
-        lockIfUserNotLogedIn: true
-      }
     },
     {
       path: '/moje_oferty/:employer_id',
@@ -62,9 +59,6 @@ const router = new Router({
       path: '/oferta_pracy/:offer_id',
       name: 'offer_page',
       component: OfferPage,
-      meta: {
-        lockIfUserNotLogedIn: true
-      }
     },
     {
       path: '/dodaj_oferte',

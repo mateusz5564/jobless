@@ -66,7 +66,7 @@
           </p>
         </v-card>
         <v-btn
-          v-if="!this.employer"
+          v-if="!this.employer && this.user"
           class="display-1 font-weight-bold"
           color="teal accent-3"
           dark
@@ -87,6 +87,7 @@ export default {
   data() {
     return {
       employer: null,
+      user: null,
       offer: {}
     };
   },
@@ -94,6 +95,7 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         user.getIdTokenResult().then(token => {
+          this.user = user;
           token.claims.employer
             ? (this.employer = true)
             : (this.employer = null);
